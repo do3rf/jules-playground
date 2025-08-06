@@ -1,0 +1,13 @@
+{
+    "name": "Eiffel Tower Compass",
+    "short_name": "Eiffel Compass",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#fff",
+    "description": "A compass that points to the Eiffel Tower.",
+    "icons": [{
+        "src": "icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    }]
+}
