@@ -38,6 +38,9 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
 
 let bearing = 0;
 const arrow = document.getElementById('arrow');
+const latEl = document.getElementById('lat');
+const lonEl = document.getElementById('lon');
+const alphaEl = document.getElementById('alpha');
 
 function startApp() {
     if ('geolocation' in navigator) {
@@ -47,6 +50,8 @@ function startApp() {
             bearing = calculateBearing(latitude, longitude, eiffelTower.lat, eiffelTower.lng);
 
             document.getElementById('distance').textContent = `Distance: ${Math.round(distance / 1000)} km`;
+            latEl.textContent = latitude.toFixed(4);
+            lonEl.textContent = longitude.toFixed(4);
 
         }, error => {
             console.error(error);
@@ -66,7 +71,8 @@ function startApp() {
                 heading = event.webkitCompassHeading;
             }
             const rotation = bearing - heading;
-            arrow.style.transform = `rotate(${rotation}deg)`;
+            arrow.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+            alphaEl.textContent = heading ? heading.toFixed(2) : 'null';
         });
     } else {
         alert("Device orientation not supported");
