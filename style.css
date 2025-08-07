@@ -35,7 +35,19 @@ h1 {
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
     border-bottom: 100px solid red;
+    /*
+     * The transform-origin is set to the bottom center of the arrow.
+     * This is crucial for the arrow to rotate around its base, rather than its center.
+     */
     transform-origin: 50% 100%;
+    /*
+     * The transform property is used to position and rotate the arrow.
+     * The translate(-50%, -100%) part moves the arrow up by 100% of its own height
+     * and left by 50% of its own width. This is to ensure the base of the arrow
+     * is at the center of the compass.
+     * The rotate(0deg) part is the initial rotation of the arrow, which is updated
+     * by the JavaScript code.
+     */
     transform: translate(-50%, -100%) rotate(0deg);
     transition: transform 0.5s ease;
 }
