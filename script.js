@@ -70,7 +70,8 @@ function calculateBearing(lat1, lon1, lat2, lon2) {
 // This is needed because the bearing is calculated in the geolocation callback,
 // but it is used in the device orientation callback.
 let bearing = 0;
-let smoothedHeading = 0;
+let smoothedHeadingX = 0;
+let smoothedHeadingY = 0;
 const smoothingFactor = 0.1;
 
 // Get references to the UI elements that will be updated.
@@ -119,19 +120,20 @@ function startApp() {
             }
 
             if (heading !== null) {
-                let diff = heading - smoothedHeading;
-                // Handle the wrap-around from 360 to 0 degrees.
-                if (diff > 180) {
-                    diff -= 360;
-                } else if (diff < -180) {
-                    diff += 360;
+                const headingRad = toRadians(heading);
+                const headingX = Math.cos(headingRad);
+                const headingY = Math.sin(headingRad);
+
+                if (smoothedHeadingX === 0 && smoothedHeadingY === 0) {
+                    smoothedHeadingX = headingX;
+                    smoothedHeadingY = headingY;
+                } else {
+                    smoothedHeadingX = smoothedHeadingX * (1 - smoothingFactor) + headingX * smoothingFactor;
+                    smoothedHeadingY = smoothedHeadingY * (1 - smoothingFactor) + headingY * smoothingFactor;
                 }
 
-                smoothedHeading += diff * smoothingFactor;
-                smoothedHeading %= 360;
-                if (smoothedHeading < 0) {
-                    smoothedHeading += 360;
-                }
+                const smoothedHeadingRad = Math.atan2(smoothedHeadingY, smoothedHeadingX);
+                const smoothedHeading = (smoothedHeadingRad * 180 / Math.PI + 360) % 360;
 
                 // The rotation of the arrow is the bearing to the Eiffel Tower minus the
                 // device's current heading. This ensures the arrow always points towards
