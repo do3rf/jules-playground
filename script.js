@@ -78,7 +78,12 @@ const smoothingFactor = 0.1;
 const arrow = document.getElementById('arrow');
 const latEl = document.getElementById('lat');
 const lonEl = document.getElementById('lon');
-const alphaEl = document.getElementById('alpha');
+const rawAlphaEl = document.getElementById('raw_alpha');
+const webkitChEl = document.getElementById('webkit_ch');
+const bearingEl = document.getElementById('bearing');
+const smoothedHeadingEl = document.getElementById('smoothed_heading');
+const rotationEl = document.getElementById('rotation');
+
 
 /**
  * Starts the application by setting up the geolocation and device orientation listeners.
@@ -95,6 +100,7 @@ function startApp() {
             document.getElementById('distance').textContent = `Distance: ${Math.round(distance / 1000)} km`;
             latEl.textContent = latitude.toFixed(4);
             lonEl.textContent = longitude.toFixed(4);
+            bearingEl.textContent = bearing.toFixed(2);
 
         }, error => {
             console.error(error);
@@ -114,33 +120,22 @@ function startApp() {
             // The alpha value represents the direction the device is facing in degrees,
             // from 0 to 360, where 0 is North.
             let heading = event.alpha;
+            rawAlphaEl.textContent = event.alpha ? event.alpha.toFixed(2) : 'null';
+            webkitChEl.textContent = event.webkitCompassHeading ? event.webkitCompassHeading.toFixed(2) : 'null';
+
             // For iOS devices, the webkitCompassHeading property is used instead.
             if (typeof event.webkitCompassHeading !== "undefined") {
                 heading = event.webkitCompassHeading;
             }
 
             if (heading !== null) {
-                const headingRad = toRadians(heading);
-                const headingX = Math.cos(headingRad);
-                const headingY = Math.sin(headingRad);
-
-                if (smoothedHeadingX === 0 && smoothedHeadingY === 0) {
-                    smoothedHeadingX = headingX;
-                    smoothedHeadingY = headingY;
-                } else {
-                    smoothedHeadingX = smoothedHeadingX * (1 - smoothingFactor) + headingX * smoothingFactor;
-                    smoothedHeadingY = smoothedHeadingY * (1 - smoothingFactor) + headingY * smoothingFactor;
-                }
-
-                const smoothedHeadingRad = Math.atan2(smoothedHeadingY, smoothedHeadingX);
-                const smoothedHeading = (smoothedHeadingRad * 180 / Math.PI + 360) % 360;
-
                 // The rotation of the arrow is the bearing to the Eiffel Tower minus the
                 // device's current heading. This ensures the arrow always points towards
                 // the Eiffel Tower, regardless of the phone's orientation.
-                const rotation = bearing - smoothedHeading;
+                const rotation = bearing - heading;
                 arrow.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
-                alphaEl.textContent = smoothedHeading.toFixed(2);
+                smoothedHeadingEl.textContent = heading.toFixed(2); // For debug purposes, show raw heading
+                rotationEl.textContent = rotation.toFixed(2);
             }
         });
     } else {
